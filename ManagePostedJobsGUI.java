@@ -9,6 +9,7 @@ import java.sql.SQLException;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.border.EmptyBorder;
@@ -23,6 +24,7 @@ public class ManagePostedJobsGUI extends JFrame {
     private JButton btnEdit;
     private JButton btnClose;
     private JButton btnReopen;
+    private JButton btnCancel;
 
 	
 	public ManagePostedJobsGUI(String username) {
@@ -71,24 +73,30 @@ public class ManagePostedJobsGUI extends JFrame {
         });
         
      // Set layout
-        setLayout(new BorderLayout());
+        getContentPane().setLayout(new BorderLayout());
 
         // Add components to the frame
-        add(new JScrollPane(jobsTable), BorderLayout.CENTER);
+        getContentPane().add(new JScrollPane(jobsTable), BorderLayout.CENTER);
 
         JPanel buttonPanel = new JPanel();
         buttonPanel.add(btnEdit);
         buttonPanel.add(btnClose);
         buttonPanel.add(btnReopen);
-        add(buttonPanel, BorderLayout.SOUTH);
+        getContentPane().add(buttonPanel, BorderLayout.SOUTH);
+        
+        btnCancel = new JButton("Cancel");
+        btnCancel.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent e) {
+        		dispose();
+        	}
+        });
+        buttonPanel.add(btnCancel);
 
         // Populate the table with data from the database
         populateJobsTable(jobsTable, username);
 	}
 	
 	public void populateJobsTable(JTable jobsTable, String username) {
-        // Assuming 'jobsTable' is a JTable component in your GUI
-
         // Define the column names
         String[] columnNames = {"Job Title", "Job Status"};
 
@@ -96,14 +104,14 @@ public class ManagePostedJobsGUI extends JFrame {
         DefaultTableModel model = new DefaultTableModel(null, columnNames);
 
         try (Connection connection = DatabaseConnect.connect()) {
-            String selectJobsQuery = "SELECT job_title, job_status FROM job WHERE username = ?";
+            String selectJobsQuery = "SELECT job_title, status FROM job WHERE username = ?";
             try (PreparedStatement preparedStatement = connection.prepareStatement(selectJobsQuery)) {
                 preparedStatement.setString(1, username);
                 ResultSet resultSet = preparedStatement.executeQuery();
 
                 // Iterate through the ResultSet and add rows to the model
                 while (resultSet.next()) {
-                    Object[] rowData = {resultSet.getString("job_title"), resultSet.getString("job_status")};
+                    Object[] rowData = {resultSet.getString("job_title"), resultSet.getString("status")};
                     model.addRow(rowData);
                 }
                 
@@ -120,17 +128,72 @@ public class ManagePostedJobsGUI extends JFrame {
 
 	
 	private void editJob(String username, String jobTitle) {
-        // Implement the logic for editing a job
-        // You can open a new GUI or perform other actions based on your requirements
+		try (Connection connection = DatabaseConnect.connect()) {
+	        String selectJobQuery = "SELECT * FROM job WHERE username = ? AND job_title = ?";
+	        try (PreparedStatement preparedStatement = connection.prepareStatement(selectJobQuery)) {
+	            preparedStatement.setString(1, username);
+	            preparedStatement.setString(2, jobTitle);
+	            ResultSet resultSet = preparedStatement.executeQuery();
+
+	            if (resultSet.next()) {
+	                String jobDescription = resultSet.getString("job_description");
+	                String location = resultSet.getString("location");
+	                String educationRequirements = resultSet.getString("education_requirements");
+	                editjobgui_show(username, jobTitle, jobDescription, location, educationRequirements);
+	            } else {
+	                JOptionPane.showMessageDialog(null, "Job not found.", "Error", JOptionPane.ERROR_MESSAGE);
+	            }
+	        }
+	    } catch (SQLException ex) {
+	        ex.printStackTrace();
+	        JOptionPane.showMessageDialog(null, "Error retrieving job information.", "Error", JOptionPane.ERROR_MESSAGE);
+	    }
     }
 
     private void closeJob(String username, String jobTitle) {
-        // Implement the logic for closing a job
-        // You can update the job status in the database and refresh the table
+    	try (Connection connection = DatabaseConnect.connect()) {
+            String closeJobQuery = "UPDATE job SET status = 'closed' WHERE username = ? AND job_title = ?";
+            try (PreparedStatement preparedStatement = connection.prepareStatement(closeJobQuery)) {
+                preparedStatement.setString(1, username);
+                preparedStatement.setString(2, jobTitle);
+
+                int rowsAffected = preparedStatement.executeUpdate();
+
+                if (rowsAffected > 0) {
+                    JOptionPane.showMessageDialog(null, "Job closed successfully!");
+                } else {
+                    JOptionPane.showMessageDialog(null, "Job not found or already closed.", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error closing job.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     private void reopenJob(String username, String jobTitle) {
-        // Implement the logic for reopening a job
-        // You can update the job status in the database and refresh the table
+    	try (Connection connection = DatabaseConnect.connect()) {
+            String reopenJobQuery = "UPDATE job SET status = 'open' WHERE username = ? AND job_title = ?";
+            try (PreparedStatement preparedStatement = connection.prepareStatement(reopenJobQuery)) {
+                preparedStatement.setString(1, username);
+                preparedStatement.setString(2, jobTitle);
+
+                int rowsAffected = preparedStatement.executeUpdate();
+
+                if (rowsAffected > 0) {
+                    JOptionPane.showMessageDialog(null, "Job reopened successfully!");
+                } else {
+                    JOptionPane.showMessageDialog(null, "Job not found or already open.", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error reopening job.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+    
+    private void editjobgui_show(String username, String jobTitle, String jobDescription, String location, String educationRequirements) {
+    	EditJobGUI editjobgui = new EditJobGUI(username, jobTitle, jobDescription, location, educationRequirements);
+    	editjobgui.show();
     }
 }
