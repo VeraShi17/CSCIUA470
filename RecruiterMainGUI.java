@@ -1,24 +1,19 @@
-import java.awt.EventQueue;
-
-import javax.swing.JFrame;
-import javax.swing.JPanel;
+import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-
-import java.awt.Font;
-import javax.swing.JButton;
+import java.awt.*;
 import java.awt.event.ActionListener;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.awt.event.ActionEvent;
 
 public class RecruiterMainGUI extends JFrame {
 
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
+	private JLabel lblWelcome;
+	private JButton btnPost;
+	private JButton btnManage;
+	private JButton btnReview;
+	private JButton btnUpdate;
 
 	
 	public RecruiterMainGUI(String username) {
@@ -30,12 +25,12 @@ public class RecruiterMainGUI extends JFrame {
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 		
-		JLabel lblWelcome = new JLabel("Welcome, " + username +" !");
+		lblWelcome = new JLabel("Welcome, " + username +" !");
 		lblWelcome.setFont(new Font("Comic Sans MS", Font.PLAIN, 16));
 		lblWelcome.setBounds(21, 6, 397, 23);
 		contentPane.add(lblWelcome);
 		
-		JButton btnPost = new JButton("Post a New Job");
+		btnPost = new JButton("Post a New Job");
 		btnPost.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				postanewjob_show(username);
@@ -45,7 +40,7 @@ public class RecruiterMainGUI extends JFrame {
 		btnPost.setBounds(137, 34, 152, 29);
 		contentPane.add(btnPost);
 		
-		JButton btnManage = new JButton("Manage Posted Jobs");
+		btnManage = new JButton("Manage Posted Jobs");
 		btnManage.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				managepostedjobs_show(username);
@@ -55,7 +50,7 @@ public class RecruiterMainGUI extends JFrame {
 		btnManage.setBounds(125, 94, 178, 29);
 		contentPane.add(btnManage);
 		
-		JButton btnReview = new JButton("Review Job Applications");
+		btnReview = new JButton("Review Job Applications");
 		btnReview.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				reviewapplications_show(username);
@@ -65,15 +60,15 @@ public class RecruiterMainGUI extends JFrame {
 		btnReview.setBounds(112, 154, 214, 29);
 		contentPane.add(btnReview);
 		
-		JButton btnNewButton = new JButton("Update Profile");
-		btnNewButton.addActionListener(new ActionListener() {
+		btnUpdate = new JButton("Update Profile");
+		btnUpdate.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				recruiterinfoshow(username);
 			}
 		});
-		btnNewButton.setFont(new Font("Lucida Grande", Font.PLAIN, 15));
-		btnNewButton.setBounds(140, 214, 152, 29);
-		contentPane.add(btnNewButton);
+		btnUpdate.setFont(new Font("Lucida Grande", Font.PLAIN, 15));
+		btnUpdate.setBounds(140, 214, 152, 29);
+		contentPane.add(btnUpdate);
 	}
 	
 	public void postanewjob_show(String username) {
