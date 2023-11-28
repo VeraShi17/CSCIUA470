@@ -21,7 +21,6 @@ public class RecruiterGUI extends JFrame {
 	private JPanel contentPane;
 	private JTextField txtUsername;
 	private JTextField txtPassword;
-	private String enteredUsername;
 
 	
 	public RecruiterGUI() {
