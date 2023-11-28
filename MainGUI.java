@@ -1,11 +1,6 @@
-import java.awt.EventQueue;
-
-import javax.swing.JFrame;
-import javax.swing.JPanel;
+import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-import javax.swing.JLabel;
 import java.awt.Font;
-import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
@@ -13,6 +8,10 @@ public class MainGUI extends JFrame {
 
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
+	private JLabel lblTitle;
+	private JButton btnJobseeker;
+	private JLabel lblIM;
+	private JButton btnRecruiter;
 
 
 	public MainGUI() {
@@ -24,12 +23,12 @@ public class MainGUI extends JFrame {
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 		
-		JLabel lblTitle = new JLabel("Welcome to CareerLinker!");
+		lblTitle = new JLabel("Welcome to CareerLinker!");
 		lblTitle.setBounds(115, 20, 218, 26);
 		lblTitle.setFont(new Font("Comic Sans MS", Font.PLAIN, 18));
 		contentPane.add(lblTitle);
 		
-		JButton btnJobseeker = new JButton("Job Seeker");
+		btnJobseeker = new JButton("Job Seeker");
 		btnJobseeker.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				// open jobseekerGUI
@@ -40,12 +39,12 @@ public class MainGUI extends JFrame {
 		btnJobseeker.setBounds(162, 108, 117, 29);
 		contentPane.add(btnJobseeker);
 		
-		JLabel lblIM = new JLabel("I'm ...");
+		lblIM = new JLabel("I'm ...");
 		lblIM.setFont(new Font("Lucida Grande", Font.PLAIN, 16));
 		lblIM.setBounds(37, 75, 61, 16);
 		contentPane.add(lblIM);
 		
-		JButton btnRecruiter = new JButton("Recruiter");
+		btnRecruiter = new JButton("Recruiter");
 		btnRecruiter.setFont(new Font("Lucida Grande", Font.PLAIN, 16));
 		btnRecruiter.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
