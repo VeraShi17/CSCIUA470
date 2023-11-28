@@ -91,7 +91,7 @@ public class PostANewJobGUI extends JFrame {
 		            // Insert values into the job table
 		            try {
 		                Connection connection = DatabaseConnect.connect();
-		                String insertJobQuery = "INSERT INTO job (username, job_title, job_description, location, education_requirements, status) VALUES (?, ?, ?, ?, ?, open)";
+		                String insertJobQuery = "INSERT INTO job (username, job_title, job_description, location, education_requirements, status) VALUES (?, ?, ?, ?, ?, 'open')";
 		                try (PreparedStatement preparedStatement = connection.prepareStatement(insertJobQuery)) {
 		                  
 
