@@ -1,23 +1,19 @@
-import java.awt.EventQueue;
-import java.awt.Font;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
+import java.sql.*;
+import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 
 public class JobSeekerMainGUI extends JFrame {
 
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
+	private JLabel lblWelcome;
+	private JButton btnView;
+	private JButton btnSearch;
+	private JButton btnReview;
+	private JButton btnUpdate;
 
 	
 	public JobSeekerMainGUI(String username) {
@@ -29,12 +25,12 @@ public class JobSeekerMainGUI extends JFrame {
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 		
-		JLabel lblWelcome = new JLabel("Welcome, " + username +" !");
+		lblWelcome = new JLabel("Welcome, " + username +" !");
 		lblWelcome.setFont(new Font("Comic Sans MS", Font.PLAIN, 16));
 		lblWelcome.setBounds(21, 6, 397, 23);
 		contentPane.add(lblWelcome);
 		
-		JButton btnView = new JButton("View Available Jobs");
+		btnView = new JButton("View Available Jobs");
 		btnView.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				viewjobs_show(username);
@@ -44,7 +40,7 @@ public class JobSeekerMainGUI extends JFrame {
 		btnView.setBounds(125, 41, 178, 29);
 		contentPane.add(btnView);
 		
-		JButton btnSearch = new JButton("Search Jobs");
+		btnSearch = new JButton("Search Jobs");
 		btnSearch.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				searchjobs_show(username);
@@ -54,7 +50,7 @@ public class JobSeekerMainGUI extends JFrame {
 		btnSearch.setBounds(125, 94, 178, 29);
 		contentPane.add(btnSearch);
 		
-		JButton btnReview = new JButton("View Applied Jobs");
+		btnReview = new JButton("View Applied Jobs");
 		btnReview.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				viewappliedjobs_show(username);
@@ -64,7 +60,7 @@ public class JobSeekerMainGUI extends JFrame {
 		btnReview.setBounds(112, 154, 214, 29);
 		contentPane.add(btnReview);
 		
-		JButton btnUpdate = new JButton("Update Profile");
+		btnUpdate = new JButton("Update Profile");
 		btnUpdate.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				jobseekerinfoshow(username);
