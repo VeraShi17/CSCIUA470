@@ -73,12 +73,27 @@ public class DatabaseConnect {
             if (!resultSet.next()) {
                 // create job table
                 String createJobTable = "CREATE TABLE IF NOT EXISTS job (" +
-                		"username VARCHAR(50) PRIMARY KEY," +
+                		"username VARCHAR(50)," +
                 		"job_title VARCHAR(255)," +
                 		"job_description VARCHAR(400)," +
                 		"location VARCHAR(255)," +
                         "education_requirements VARCHAR(255)," +
-                		"status VARCHAR(10)" +
+                		"status VARCHAR(10)," +
+                		"PRIMARY KEY (username, job_title)" +
+                        ");";
+                statement.executeUpdate(createJobTable);
+            }
+            
+         // check whether applicant table exists
+            resultSet = connection.getMetaData().getTables(null, null, "applicant", null);
+            if (!resultSet.next()) {
+                // create job table
+                String createJobTable = "CREATE TABLE IF NOT EXISTS applicant (" +
+                		"recruiter_username VARCHAR(50)," +
+                		"job_title VARCHAR(255)," +
+                		"jobseeker_username VARCHAR(50)," +
+                		"application_status VARCHAR(10)," +
+                		"PRIMARY KEY (recruiter_username, job_title, jobseeker_username)" +
                         ");";
                 statement.executeUpdate(createJobTable);
             }
