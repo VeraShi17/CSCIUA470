@@ -1,21 +1,13 @@
-import java.awt.EventQueue;
-import java.awt.GridLayout;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
+import javax.swing.*;
 
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
 
 public class ViewJSProfileGUI extends JFrame {
 
-	private JPanel contentPane;
+	private static final long serialVersionUID = 1L;
     private JLabel lblName;
     private JLabel lblPhone;
     private JLabel lblEmail;
