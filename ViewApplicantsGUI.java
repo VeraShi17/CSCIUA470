@@ -3,10 +3,7 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 
 public class ViewApplicantsGUI extends JFrame {
 
@@ -16,6 +13,7 @@ public class ViewApplicantsGUI extends JFrame {
     private JButton btnAccept;
     private JButton btnReject;
     private JButton btnCancel;
+    private JPanel buttonPanel;
 
     public ViewApplicantsGUI(String recruiterUsername, String jobTitle) {
         setTitle(jobTitle + " - View Applicants");
@@ -76,7 +74,7 @@ public class ViewApplicantsGUI extends JFrame {
         // Add components to the frame
         add(new JScrollPane(applicantsTable), BorderLayout.CENTER);
 
-        JPanel buttonPanel = new JPanel();
+        buttonPanel = new JPanel();
         buttonPanel.add(btnViewProfile);
         buttonPanel.add(btnAccept);
         buttonPanel.add(btnReject);
@@ -174,6 +172,4 @@ public class ViewApplicantsGUI extends JFrame {
             e.printStackTrace();
         }
     }
-
-    
 }
