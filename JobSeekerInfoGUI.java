@@ -1,18 +1,8 @@
-import java.awt.EventQueue;
-import java.awt.Font;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
+import java.sql.*;
+import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 
 public class JobSeekerInfoGUI extends JFrame {
@@ -25,6 +15,14 @@ public class JobSeekerInfoGUI extends JFrame {
 	private JTextField txtSkills;
 	private JTextArea txtEducation;
 	private JTextArea txtWork;
+	private JLabel lblInstruction;
+	private JLabel lblName;
+	private JLabel lblPhone;
+	private JLabel lblEmail;
+	private JLabel lblSkills;
+	private JLabel lblEducation;
+	private JButton btnNext;
+	private JLabel lblWork;
 
 	
 	public JobSeekerInfoGUI(String username) {
@@ -36,32 +34,32 @@ public class JobSeekerInfoGUI extends JFrame {
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 		
-		JLabel lblInstruction = new JLabel("Please enter the following information. You could also update them later.");
+		lblInstruction = new JLabel("Please enter the following information. You could also update them later.");
 		lblInstruction.setFont(new Font("Lucida Grande", Font.PLAIN, 14));
 		lblInstruction.setBounds(6, 6, 519, 16);
 		contentPane.add(lblInstruction);
 		
-		JLabel lblName = new JLabel("Name");
+		lblName = new JLabel("Name");
 		lblName.setFont(new Font("Lucida Grande", Font.PLAIN, 14));
 		lblName.setBounds(61, 38, 44, 16);
 		contentPane.add(lblName);
 		
-		JLabel lblPhone = new JLabel("Phone");
+		lblPhone = new JLabel("Phone");
 		lblPhone.setFont(new Font("Lucida Grande", Font.PLAIN, 14));
 		lblPhone.setBounds(61, 86, 44, 16);
 		contentPane.add(lblPhone);
 		
-		JLabel lblEmail = new JLabel("Email");
+		lblEmail = new JLabel("Email");
 		lblEmail.setFont(new Font("Lucida Grande", Font.PLAIN, 14));
 		lblEmail.setBounds(61, 134, 44, 16);
 		contentPane.add(lblEmail);
 		
-		JLabel lblSkills = new JLabel("Skills");
+		lblSkills = new JLabel("Skills");
 		lblSkills.setFont(new Font("Lucida Grande", Font.PLAIN, 14));
 		lblSkills.setBounds(61, 182, 122, 16);
 		contentPane.add(lblSkills);
 		
-		JLabel lblEducation = new JLabel("Education Experience");
+		lblEducation = new JLabel("Education Experience");
 		lblEducation.setFont(new Font("Lucida Grande", Font.PLAIN, 14));
 		lblEducation.setBounds(61, 230, 157, 16);
 		contentPane.add(lblEducation);
@@ -90,7 +88,7 @@ public class JobSeekerInfoGUI extends JFrame {
 		contentPane.add(txtSkills);
 		txtSkills.setColumns(10);
 		
-		JButton btnNext = new JButton("Next");
+		btnNext = new JButton("Next");
 		btnNext.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (areTextFieldsEmpty()) {
@@ -109,7 +107,7 @@ public class JobSeekerInfoGUI extends JFrame {
 		txtEducation.setBounds(257, 230, 245, 88);
 		contentPane.add(txtEducation);
 		
-		JLabel lblWork = new JLabel("Work Experience");
+		lblWork = new JLabel("Work Experience");
 		lblWork.setFont(new Font("Lucida Grande", Font.PLAIN, 14));
 		lblWork.setBounds(61, 341, 157, 16);
 		contentPane.add(lblWork);
