@@ -1,19 +1,9 @@
-import java.awt.EventQueue;
-
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.JTextArea;
+import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 
-import java.awt.Font;
-import javax.swing.JTextField;
-import javax.swing.JButton;
+import java.awt.*;
 import java.awt.event.ActionListener;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import java.sql.*;
 import java.awt.event.ActionEvent;
 
 public class PostANewJobGUI extends JFrame {
@@ -26,6 +16,10 @@ public class PostANewJobGUI extends JFrame {
 	private JTextArea txtEducation;
 	private JButton btnPost;
 	private JButton btnCancel;
+	private JLabel lblTitle;
+	private JLabel lblDescription;
+	private JLabel lblEducation;
+	private JLabel lblLocation;
 
 	
 	public PostANewJobGUI(String username) {
@@ -37,22 +31,22 @@ public class PostANewJobGUI extends JFrame {
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 		
-		JLabel lblTitle = new JLabel("Job Title");
+		lblTitle = new JLabel("Job Title");
 		lblTitle.setFont(new Font("Lucida Grande", Font.PLAIN, 14));
 		lblTitle.setBounds(23, 18, 62, 16);
 		contentPane.add(lblTitle);
 		
-		JLabel lblDescription = new JLabel("Job Description");
+		lblDescription = new JLabel("Job Description");
 		lblDescription.setFont(new Font("Lucida Grande", Font.PLAIN, 14));
 		lblDescription.setBounds(23, 61, 105, 16);
 		contentPane.add(lblDescription);
 		
-		JLabel lblEducation = new JLabel("Education Requirements");
+		lblEducation = new JLabel("Education Requirements");
 		lblEducation.setFont(new Font("Lucida Grande", Font.PLAIN, 14));
 		lblEducation.setBounds(23, 278, 170, 16);
 		contentPane.add(lblEducation);
 		
-		JLabel lblLocation = new JLabel("Location");
+		lblLocation = new JLabel("Location");
 		lblLocation.setFont(new Font("Lucida Grande", Font.PLAIN, 14));
 		lblLocation.setBounds(23, 235, 61, 16);
 		contentPane.add(lblLocation);
