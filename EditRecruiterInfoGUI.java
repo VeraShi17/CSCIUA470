@@ -1,18 +1,8 @@
-import java.awt.EventQueue;
-import java.awt.Font;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
+import java.sql.*;
+import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 
 public class EditRecruiterInfoGUI extends JFrame {
@@ -26,6 +16,11 @@ public class EditRecruiterInfoGUI extends JFrame {
 	private JTextArea txtCompanyDescription;
 	private JButton btnSave;
 	private JButton btnCancel;
+	private JLabel lblName;
+	private JLabel lblPhone;
+	private JLabel lblEmail;
+	private JLabel lblCompanyName;
+	private JLabel lblCompanyDescription;
 
 	
 	public EditRecruiterInfoGUI(String username, String name, String phone, String email, String companyName, String companyDescription) {
@@ -37,27 +32,27 @@ public class EditRecruiterInfoGUI extends JFrame {
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 		
-		JLabel lblName = new JLabel("Name");
+		lblName = new JLabel("Name");
 		lblName.setFont(new Font("Lucida Grande", Font.PLAIN, 14));
 		lblName.setBounds(61, 38, 44, 16);
 		contentPane.add(lblName);
 		
-		JLabel lblPhone = new JLabel("Phone");
+		lblPhone = new JLabel("Phone");
 		lblPhone.setFont(new Font("Lucida Grande", Font.PLAIN, 14));
 		lblPhone.setBounds(61, 86, 44, 16);
 		contentPane.add(lblPhone);
 		
-		JLabel lblEmail = new JLabel("Email");
+		lblEmail = new JLabel("Email");
 		lblEmail.setFont(new Font("Lucida Grande", Font.PLAIN, 14));
 		lblEmail.setBounds(61, 134, 44, 16);
 		contentPane.add(lblEmail);
 		
-		JLabel lblCompanyName = new JLabel("Company Name");
+		lblCompanyName = new JLabel("Company Name");
 		lblCompanyName.setFont(new Font("Lucida Grande", Font.PLAIN, 14));
 		lblCompanyName.setBounds(61, 182, 122, 16);
 		contentPane.add(lblCompanyName);
 		
-		JLabel lblCompanyDescription = new JLabel("Company Description");
+		lblCompanyDescription = new JLabel("Company Description");
 		lblCompanyDescription.setFont(new Font("Lucida Grande", Font.PLAIN, 14));
 		lblCompanyDescription.setBounds(61, 230, 157, 16);
 		contentPane.add(lblCompanyDescription);
@@ -120,8 +115,8 @@ public class EditRecruiterInfoGUI extends JFrame {
 		                	preparedStatement.setString(1, name);
 		                    preparedStatement.setString(2, phone);
 		                    preparedStatement.setString(3, email);
-		                    preparedStatement.setString(4, companyName);
-		                    preparedStatement.setString(5, companyDescription);
+		                    preparedStatement.setString(4, company_name);
+		                    preparedStatement.setString(5, company_description);
 		                    preparedStatement.setString(6, username);
 		                    preparedStatement.executeUpdate();
 
