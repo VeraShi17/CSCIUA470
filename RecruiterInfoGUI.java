@@ -1,20 +1,9 @@
-import java.awt.EventQueue;
-
-import javax.swing.JFrame;
-import javax.swing.JPanel;
+import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-
-import java.awt.Font;
-import javax.swing.JTextField;
-import javax.swing.JButton;
+import java.awt.*;
 import java.awt.event.ActionListener;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import java.sql.*;
 import java.awt.event.ActionEvent;
-import javax.swing.JTextArea;
 
 public class RecruiterInfoGUI extends JFrame {
 
@@ -25,6 +14,13 @@ public class RecruiterInfoGUI extends JFrame {
 	private JTextField txtEmail;
 	private JTextField txtCompanyName;
 	private JTextArea txtCompanyDescription;
+	private JLabel lblInstruction;
+	private JLabel lblName;
+	private JLabel lblPhone;
+	private JLabel lblEmail;
+	private JLabel lblCompanyName;
+	private JLabel lblCompanyDescription;
+	private JButton btnNext;
 
 	
 	public RecruiterInfoGUI(String username) {
@@ -36,32 +32,32 @@ public class RecruiterInfoGUI extends JFrame {
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 		
-		JLabel lblInstruction = new JLabel("Please enter the following information. You could also update them later.");
+		lblInstruction = new JLabel("Please enter the following information. You could also update them later.");
 		lblInstruction.setFont(new Font("Lucida Grande", Font.PLAIN, 14));
 		lblInstruction.setBounds(6, 6, 519, 16);
 		contentPane.add(lblInstruction);
 		
-		JLabel lblName = new JLabel("Name");
+		lblName = new JLabel("Name");
 		lblName.setFont(new Font("Lucida Grande", Font.PLAIN, 14));
 		lblName.setBounds(61, 38, 44, 16);
 		contentPane.add(lblName);
 		
-		JLabel lblPhone = new JLabel("Phone");
+		lblPhone = new JLabel("Phone");
 		lblPhone.setFont(new Font("Lucida Grande", Font.PLAIN, 14));
 		lblPhone.setBounds(61, 86, 44, 16);
 		contentPane.add(lblPhone);
 		
-		JLabel lblEmail = new JLabel("Email");
+		lblEmail = new JLabel("Email");
 		lblEmail.setFont(new Font("Lucida Grande", Font.PLAIN, 14));
 		lblEmail.setBounds(61, 134, 44, 16);
 		contentPane.add(lblEmail);
 		
-		JLabel lblCompanyName = new JLabel("Company Name");
+		lblCompanyName = new JLabel("Company Name");
 		lblCompanyName.setFont(new Font("Lucida Grande", Font.PLAIN, 14));
 		lblCompanyName.setBounds(61, 182, 122, 16);
 		contentPane.add(lblCompanyName);
 		
-		JLabel lblCompanyDescription = new JLabel("Company Description");
+		lblCompanyDescription = new JLabel("Company Description");
 		lblCompanyDescription.setFont(new Font("Lucida Grande", Font.PLAIN, 14));
 		lblCompanyDescription.setBounds(61, 230, 157, 16);
 		contentPane.add(lblCompanyDescription);
@@ -90,7 +86,7 @@ public class RecruiterInfoGUI extends JFrame {
 		contentPane.add(txtCompanyName);
 		txtCompanyName.setColumns(10);
 		
-		JButton btnNext = new JButton("Next");
+		btnNext = new JButton("Next");
 		btnNext.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (areTextFieldsEmpty()) {
