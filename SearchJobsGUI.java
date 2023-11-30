@@ -1,27 +1,13 @@
-import java.awt.BorderLayout;
-import java.awt.EventQueue;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.JTextField;
-import javax.swing.border.EmptyBorder;
+import java.sql.*;
+import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 
 public class SearchJobsGUI extends JFrame {
 
 	private static final long serialVersionUID = 1L;
-    private JPanel contentPane;
     private JTextField txtSearch;
     private JTable jobsTable;
     private JButton btnSearch;
@@ -31,6 +17,9 @@ public class SearchJobsGUI extends JFrame {
 
     private String selectedJobTitle;
     private String selectedRecruiterUsername;
+    
+    private JPanel searchPanel;
+    private JPanel buttonPanel;
 
     public SearchJobsGUI(String jobSeekerUsername) {
         setTitle("Search Jobs");
@@ -75,7 +64,7 @@ public class SearchJobsGUI extends JFrame {
         getContentPane().setLayout(new BorderLayout());
 
         // Add components to the frame
-        JPanel searchPanel = new JPanel();
+        searchPanel = new JPanel();
         searchPanel.add(new JLabel("Search by Title:"));
         searchPanel.add(txtSearch);
         searchPanel.add(btnSearch);
@@ -83,7 +72,7 @@ public class SearchJobsGUI extends JFrame {
 
         getContentPane().add(new JScrollPane(jobsTable), BorderLayout.CENTER);
 
-        JPanel buttonPanel = new JPanel();
+        buttonPanel = new JPanel();
         buttonPanel.add(btnViewDetails);
         buttonPanel.add(btnApply);
         buttonPanel.add(btnCancel);
