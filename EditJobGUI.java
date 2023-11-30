@@ -1,18 +1,8 @@
-import java.awt.EventQueue;
-import java.awt.Font;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
+import java.sql.*;
+import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 
 public class EditJobGUI extends JFrame {
@@ -25,6 +15,10 @@ public class EditJobGUI extends JFrame {
 	private JTextArea txtEducation;
 	private JButton btnSave;
 	private JButton btnCancel;
+	private JLabel lblTitle;
+	private JLabel lblDescription;
+	private JLabel lblEducation;
+	private JLabel lblLocation;
 
 	
 	public EditJobGUI(String username, String jobTitle, String jobDescription, String location, String educationRequirements) {
@@ -36,22 +30,22 @@ public class EditJobGUI extends JFrame {
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 		
-		JLabel lblTitle = new JLabel("Job Title");
+		lblTitle = new JLabel("Job Title");
 		lblTitle.setFont(new Font("Lucida Grande", Font.PLAIN, 14));
 		lblTitle.setBounds(23, 18, 62, 16);
 		contentPane.add(lblTitle);
 		
-		JLabel lblDescription = new JLabel("Job Description");
+		lblDescription = new JLabel("Job Description");
 		lblDescription.setFont(new Font("Lucida Grande", Font.PLAIN, 14));
 		lblDescription.setBounds(23, 61, 105, 16);
 		contentPane.add(lblDescription);
 		
-		JLabel lblEducation = new JLabel("Education Requirements");
+		lblEducation = new JLabel("Education Requirements");
 		lblEducation.setFont(new Font("Lucida Grande", Font.PLAIN, 14));
 		lblEducation.setBounds(23, 278, 170, 16);
 		contentPane.add(lblEducation);
 		
-		JLabel lblLocation = new JLabel("Location");
+		lblLocation = new JLabel("Location");
 		lblLocation.setFont(new Font("Lucida Grande", Font.PLAIN, 14));
 		lblLocation.setBounds(23, 235, 61, 16);
 		contentPane.add(lblLocation);
