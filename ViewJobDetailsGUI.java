@@ -1,16 +1,12 @@
 import javax.swing.*;
-import javax.swing.border.EmptyBorder;
 import java.awt.*;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
 public class ViewJobDetailsGUI extends JFrame {
 
-    private JPanel contentPane;
+	private static final long serialVersionUID = 1L;
     private JLabel lblJobTitle;
     private JLabel lblJobDescription;
     private JLabel lblLocation;
