@@ -1,21 +1,8 @@
-import java.awt.BorderLayout;
-import java.awt.EventQueue;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-
-import javax.swing.DefaultListModel;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JList;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.border.EmptyBorder;
+import java.sql.*;
+import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 
 public class AppliedJobsGUI extends JFrame {
@@ -24,6 +11,7 @@ public class AppliedJobsGUI extends JFrame {
     private JTable jobsTable;
 //    private JButton btnCancelApplication;
     private JButton btnCancel;
+    private JPanel buttonPanel;
 
     public AppliedJobsGUI(String jobseekerUsername) {
         setTitle("Applied Jobs");
@@ -60,7 +48,7 @@ public class AppliedJobsGUI extends JFrame {
         // Add components to the frame
         add(new JScrollPane(jobsTable), BorderLayout.CENTER);
 
-        JPanel buttonPanel = new JPanel();
+        buttonPanel = new JPanel();
 //        buttonPanel.add(btnCancelApplication);
         buttonPanel.add(btnCancel);
         add(buttonPanel, BorderLayout.SOUTH);
