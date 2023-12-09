@@ -7,11 +7,15 @@ import javax.swing.table.DefaultTableModel;
 
 public class AppliedJobsGUI extends JFrame {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
     private JTable jobsTable;
 //    private JButton btnCancelApplication;
     private JButton btnCancel;
     private JPanel buttonPanel;
+    private DatabaseConnect conn;
+    private ResultSet resultSet;
+    private String[] columnNames = {"Job Title", "Job Status", "Application Status"};
+    private DefaultTableModel model;
 
     public AppliedJobsGUI(String jobseekerUsername) {
         setTitle("Applied Jobs");
@@ -57,42 +61,35 @@ public class AppliedJobsGUI extends JFrame {
         populateAppliedJobsTable(jobsTable, jobseekerUsername);
     }
 
-    private void populateAppliedJobsTable(JTable jobsTable, String jobseekerUsername) {
-        // Define the column names
-        String[] columnNames = {"Job Title", "Job Status", "Application Status"};
-
+    public void populateAppliedJobsTable(JTable jobsTable, String jobseekerUsername) {
         // Create a DefaultTableModel with no data
-        DefaultTableModel model = new DefaultTableModel(null, columnNames);
+        model = new DefaultTableModel(null, columnNames);
 
-        try (Connection connection = DatabaseConnect.connect()) {
-            String selectJobsQuery = "SELECT a.job_title, j.status, a.application_status " +
-                                    "FROM applicant a " +
-                                    "JOIN job j ON a.recruiter_username = j.username AND a.job_title = j.job_title " +
-                                    "WHERE a.jobseeker_username = ?";
+        // Iterate through the ResultSet and add rows to the model
+        conn = new DatabaseConnect();
+        resultSet = conn.retrieveAppliedJobs(jobseekerUsername);
+        try {
+			while (resultSet.next()) {
+			    Object[] rowData = {
+			        resultSet.getString("job_title"),
+			        resultSet.getString("status"),
+			        resultSet.getString("application_status")
+			    };
+			    model.addRow(rowData);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 
-            try (PreparedStatement preparedStatement = connection.prepareStatement(selectJobsQuery)) {
-                preparedStatement.setString(1, jobseekerUsername);
-                ResultSet resultSet = preparedStatement.executeQuery();
+        // Set the model to the JTable
+        jobsTable.setModel(model);
 
-                // Iterate through the ResultSet and add rows to the model
-                while (resultSet.next()) {
-                    Object[] rowData = {
-                        resultSet.getString("job_title"),
-                        resultSet.getString("status"),
-                        resultSet.getString("application_status")
-                    };
-                    model.addRow(rowData);
-                }
-
-                // Set the model to the JTable
-                jobsTable.setModel(model);
-
-                // Close the ResultSet
-                resultSet.close();
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        // Close the ResultSet
+        try {
+			resultSet.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 
     }
 
