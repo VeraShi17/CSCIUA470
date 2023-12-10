@@ -1,7 +1,6 @@
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.sql.*;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 
@@ -21,7 +20,12 @@ public class EditRecruiterInfoGUI extends JFrame {
 	private JLabel lblEmail;
 	private JLabel lblCompanyName;
 	private JLabel lblCompanyDescription;
-
+	private DatabaseConnect conn;
+	private String Name;
+	private String Phone;
+	private String Email;
+	private String company_name;
+	private String company_description;
 	
 	public EditRecruiterInfoGUI(String username, String name, String phone, String email, String companyName, String companyDescription) {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -98,41 +102,7 @@ public class EditRecruiterInfoGUI extends JFrame {
 		btnSave = new JButton("Save");
 		btnSave.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				// Check if all text fields are non-empty
-		        if (isFieldsNotEmpty()) {
-		            // Get values from text fields
-		            String name = txtName.getText();
-		            String phone = txtPhone.getText();
-		            String email = txtEmail.getText();
-		            String company_name = txtCompanyName.getText();
-		            String company_description = txtCompanyDescription.getText();
-
-		            // Insert values into the job table
-		            try {
-		                Connection connection = DatabaseConnect.connect();
-		                String updateRecruiterInfoQuery = "UPDATE recruiter SET name=?, phone=?, email=?, company_name=?, company_description=? WHERE username=?";
-		                try (PreparedStatement preparedStatement = connection.prepareStatement(updateRecruiterInfoQuery)) {
-		                	preparedStatement.setString(1, name);
-		                    preparedStatement.setString(2, phone);
-		                    preparedStatement.setString(3, email);
-		                    preparedStatement.setString(4, company_name);
-		                    preparedStatement.setString(5, company_description);
-		                    preparedStatement.setString(6, username);
-		                    preparedStatement.executeUpdate();
-
-		                    int rowsAffected = preparedStatement.executeUpdate();
-
-		                    if (rowsAffected > 0) {
-		                        JOptionPane.showMessageDialog(null, "Recruiter Info updated successfully!");
-		                    } else {
-		                        JOptionPane.showMessageDialog(null, "Recruiter Info not found or no changes made.", "Error", JOptionPane.ERROR_MESSAGE);
-		                    }
-		                }
-		            } catch (SQLException ex) {
-		                ex.printStackTrace();
-		                JOptionPane.showMessageDialog(null, "Error updating recruiter information.", "Error", JOptionPane.ERROR_MESSAGE);
-		            }
-		        }
+				saveRecruiterInfo(username);
 			}
 		});
 		btnSave.setFont(new Font("Lucida Grande", Font.PLAIN, 14));
@@ -140,12 +110,27 @@ public class EditRecruiterInfoGUI extends JFrame {
 		contentPane.add(btnSave);
 	}
 	
-	private boolean isFieldsNotEmpty() {
+	public boolean isFieldsNotEmpty() {
 	    return !txtName.getText().isEmpty() &&
 	           !txtPhone.getText().isEmpty() &&
 	           !txtEmail.getText().isEmpty() &&
 	           !txtCompanyName.getText().isEmpty() &&
 	           !txtCompanyDescription.getText().isEmpty();
+	}
+	
+	public void saveRecruiterInfo(String username) {
+		// Check if all text fields are non-empty
+        if (isFieldsNotEmpty()) {
+            // Get values from text fields
+            Name = txtName.getText();
+            Phone = txtPhone.getText();
+            Email = txtEmail.getText();
+            company_name = txtCompanyName.getText();
+            company_description = txtCompanyDescription.getText();
+            conn = new DatabaseConnect();
+            // Insert values into the job table
+            conn.updateRecruiterInfo(Name, Phone, Email, company_name, company_description, username);
+        }
 	}
 
 }
