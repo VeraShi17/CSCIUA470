@@ -14,7 +14,14 @@ public class JobSeekerMainGUI extends JFrame {
 	private JButton btnSearch;
 	private JButton btnReview;
 	private JButton btnUpdate;
-
+	private DatabaseConnect conn;
+	private ResultSet resultSet;
+	private String name;
+	private String phone;
+	private String email;
+	private String skills;
+	private String education;
+	private String work;
 	
 	public JobSeekerMainGUI(String username) {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -82,29 +89,26 @@ public class JobSeekerMainGUI extends JFrame {
 	}
 	
 	public void jobseekerinfoshow(String username) {
-		try (Connection connection = DatabaseConnect.connect()) {
-	        String selectJobSeekerQuery = "SELECT * FROM jobseeker WHERE username = ?";
-	        try (PreparedStatement preparedStatement = connection.prepareStatement(selectJobSeekerQuery)) {
-	            preparedStatement.setString(1, username);
-	            ResultSet resultSet = preparedStatement.executeQuery();
-
-	            if (resultSet.next()) {
-	                String name = resultSet.getString("name");
-	                String phone = resultSet.getString("phone");
-	                String email = resultSet.getString("email");
-	                String skills = resultSet.getString("skills");
-	                String education = resultSet.getString("education");
-	                String work = resultSet.getString("work_experience");
-	                EditJobSeekerInfoGUI editjsinfogui = new EditJobSeekerInfoGUI(username, name, phone, email, skills, education, work);
-	        		editjsinfogui.show();
-	            } else {
-	                JOptionPane.showMessageDialog(null, "Job Seeker info not found.", "Error", JOptionPane.ERROR_MESSAGE);
-	            }
-	        }
-	    } catch (SQLException ex) {
-	        ex.printStackTrace();
-	        JOptionPane.showMessageDialog(null, "Error retrieving job seeker information.", "Error", JOptionPane.ERROR_MESSAGE);
-	    }
+		conn = new DatabaseConnect();
+		resultSet = conn.retrieveJobSeekerInfo(username);
+		try {
+			if (resultSet.next()) {
+			    name = resultSet.getString("name");
+			    phone = resultSet.getString("phone");
+			    email = resultSet.getString("email");
+			    skills = resultSet.getString("skills");
+			    education = resultSet.getString("education");
+			    work = resultSet.getString("work_experience");
+			    EditJobSeekerInfoGUI editjsinfogui = new EditJobSeekerInfoGUI(username, name, phone, email, skills, education, work);
+				editjsinfogui.show();
+			} else {
+			    JOptionPane.showMessageDialog(null, "Job Seeker info not found.", "Error", JOptionPane.ERROR_MESSAGE);
+			}
+		} catch (HeadlessException e) {
+			e.printStackTrace();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public void viewappliedjobs_show(String username) {
