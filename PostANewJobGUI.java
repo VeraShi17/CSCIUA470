@@ -3,7 +3,6 @@ import javax.swing.border.EmptyBorder;
 
 import java.awt.*;
 import java.awt.event.ActionListener;
-import java.sql.*;
 import java.awt.event.ActionEvent;
 
 public class PostANewJobGUI extends JFrame {
@@ -20,6 +19,11 @@ public class PostANewJobGUI extends JFrame {
 	private JLabel lblDescription;
 	private JLabel lblEducation;
 	private JLabel lblLocation;
+	private DatabaseConnect conn;
+	private String jobTitle;
+	private String jobDescription;
+	private String location;
+	private String educationRequirements;
 
 	
 	public PostANewJobGUI(String username) {
@@ -74,43 +78,7 @@ public class PostANewJobGUI extends JFrame {
 		btnPost = new JButton("Post");
 		btnPost.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				// Check if all text fields are non-empty
-		        if (isFieldsNotEmpty()) {
-		            // Get values from text fields
-		            String jobTitle = txtTitle.getText();
-		            String jobDescription = txtDescription.getText();
-		            String location = txtLocation.getText();
-		            String educationRequirements = txtEducation.getText();
-
-		            // Insert values into the job table
-		            try {
-		                Connection connection = DatabaseConnect.connect();
-		                String insertJobQuery = "INSERT INTO job (username, job_title, job_description, location, education_requirements, status) VALUES (?, ?, ?, ?, ?, 'open')";
-		                try (PreparedStatement preparedStatement = connection.prepareStatement(insertJobQuery)) {
-		                  
-
-		                    preparedStatement.setString(1, username);
-		                    preparedStatement.setString(2, jobTitle);
-		                    preparedStatement.setString(3, jobDescription);
-		                    preparedStatement.setString(4, location);
-		                    preparedStatement.setString(5, educationRequirements);
-
-		                    preparedStatement.executeUpdate();
-		                }
-
-		                // Display success message
-		                JOptionPane.showMessageDialog(null, "Posted successfully!");
-
-		                dispose();
-
-		            } catch (SQLException ex) {
-		                ex.printStackTrace();
-		                JOptionPane.showMessageDialog(null, "Error posting job.", "Error", JOptionPane.ERROR_MESSAGE);
-		            }
-		        } else {
-		            // Display warning message if any field is empty
-		            JOptionPane.showMessageDialog(null, "Please fill in all fields.", "Warning", JOptionPane.WARNING_MESSAGE);
-		        }
+				postanewjob(username);
 			}
 		});
 		btnPost.setFont(new Font("Lucida Grande", Font.PLAIN, 14));
@@ -128,11 +96,30 @@ public class PostANewJobGUI extends JFrame {
 		contentPane.add(btnCancel);
 	}
 	
-	private boolean isFieldsNotEmpty() {
+	public boolean isFieldsNotEmpty() {
 	    return !txtTitle.getText().isEmpty() &&
 	           !txtDescription.getText().isEmpty() &&
 	           !txtLocation.getText().isEmpty() &&
 	           !txtEducation.getText().isEmpty();
+	}
+	
+	public void postanewjob(String username) {
+		// Check if all text fields are non-empty
+        if (isFieldsNotEmpty()) {
+            // Get values from text fields
+            jobTitle = txtTitle.getText();
+            jobDescription = txtDescription.getText();
+            location = txtLocation.getText();
+            educationRequirements = txtEducation.getText();
+
+            // Insert values into the job table
+            conn = new DatabaseConnect();
+            conn.addanewjob(username, jobTitle, jobDescription, location, educationRequirements);
+            dispose();
+        } else {
+            // Display warning message if any field is empty
+            JOptionPane.showMessageDialog(null, "Please fill in all fields.", "Warning", JOptionPane.WARNING_MESSAGE);
+        }
 	}
 
 }
