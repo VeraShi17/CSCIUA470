@@ -1,7 +1,6 @@
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.sql.*;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 
@@ -16,6 +15,10 @@ public class JobSeekerSignupGUI extends JFrame {
 	private JLabel lblPassword;
 	private JButton btnSign;
 	private JButton btnCancel;
+	private String username;
+	private String password;
+	private DatabaseConnect conn;
+	private boolean usernameExists;
 	
 	public JobSeekerSignupGUI() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -58,39 +61,9 @@ public class JobSeekerSignupGUI extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				// verify whether 1. username exists 2. txt empty
 				// 1 username exists
-		        String enteredUsername = txtUsername.getText().trim();
-		        boolean usernameExists = checkUsernameExists(enteredUsername);
-
-		        // 2 txt empty
-		        boolean usernameIsEmpty = enteredUsername.isEmpty();
-		        boolean passwordIsEmpty = txtPassword.getText().isEmpty();
-		        
-		        // warning message
-		        if (usernameExists || usernameIsEmpty || passwordIsEmpty) {
-		            StringBuilder message = new StringBuilder("Please correct the following issues:\n");
-
-		            if (usernameExists) {
-		                message.append("- Username already exists.\n");
-		            }
-
-		            if (usernameIsEmpty) {
-		                message.append("- Username is required.\n");
-		            }
-
-		            if (passwordIsEmpty) {
-		                message.append("- Password is required.\n");
-		            }
-
-		            JOptionPane.showMessageDialog(null, message.toString(), "Warning", JOptionPane.WARNING_MESSAGE);
-		        } else {
-		            // pass the verification, add information into table recruiter
-		        	String username = txtUsername.getText().trim();
-		        	String password = txtPassword.getText();
-		        	
-		        	registerUsernameAndPasswordJobSeeker(username, password);
-		        	jobseekerinfoshow(username);
-		        	dispose();
-		        }
+		        username = txtUsername.getText().trim();
+		        password = txtPassword.getText();
+		        jobSeekerSignup();
 		    }
 		});
 		btnSign.setFont(new Font("Lucida Grande", Font.PLAIN, 16));
@@ -107,29 +80,29 @@ public class JobSeekerSignupGUI extends JFrame {
 		btnCancel.setBounds(255, 201, 117, 29);
 		contentPane.add(btnCancel);
 	}
-	
-	public void registerUsernameAndPasswordJobSeeker(String username, String password) {
-        try (Connection connection = DatabaseConnect.connect()) {
-            String insertUserQuery = "INSERT INTO jobseeker (username, password) VALUES (?, ?)";
-            try (PreparedStatement preparedStatement = connection.prepareStatement(insertUserQuery)) {
-                preparedStatement.setString(1, username);
-                preparedStatement.setString(2, password);
-                preparedStatement.executeUpdate();
-            }
-            JOptionPane.showMessageDialog(null, "Username and password registered successfully!");
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-            JOptionPane.showMessageDialog(null, "Error registering username and password.", "Error", JOptionPane.ERROR_MESSAGE);
-        }
-    }
-
-    public boolean checkUsernameExists(String username) {
-        return DatabaseConnect.checkRecruiterUsernameExists(username) || DatabaseConnect.checkJobSeekerUsernameExists(username);
-    }
     
     public void jobseekerinfoshow(String username) {
 		JobSeekerInfoGUI jobseekerinfogui = new JobSeekerInfoGUI(username);
 		jobseekerinfogui.show();
+	}
+    public void jobSeekerSignup() {
+    	conn = new DatabaseConnect();
+    	usernameExists =  conn.checkRecruiterUsernameExists(username) || conn.checkJobSeekerUsernameExists(username);
+        
+        // warning message
+        if (usernameExists) {
+            JOptionPane.showMessageDialog(null, "Username already exists.", "Warning", JOptionPane.WARNING_MESSAGE);   
+        } else if (areTextFieldsEmpty()){
+        	JOptionPane.showMessageDialog(null, " Username and Password are required.", "Warning", JOptionPane.WARNING_MESSAGE);
+        }else {
+            // pass the verification, add information into table recruiter	      
+        	conn.registerUsernameAndPasswordJobSeeker(username, password);
+        	jobseekerinfoshow(username);
+        	dispose();
+        }
+    }
+    public boolean areTextFieldsEmpty(){
+		return username.isEmpty() || password.isEmpty();
 	}
 
 }
