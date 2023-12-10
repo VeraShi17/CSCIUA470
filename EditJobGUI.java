@@ -1,7 +1,6 @@
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.sql.*;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 
@@ -19,6 +18,11 @@ public class EditJobGUI extends JFrame {
 	private JLabel lblDescription;
 	private JLabel lblEducation;
 	private JLabel lblLocation;
+	private DatabaseConnect conn;
+	private String new_jobTitle;
+	private String new_jobDescription;
+	private String new_location;
+	private String new_educationRequirements;
 
 	
 	public EditJobGUI(String username, String jobTitle, String jobDescription, String location, String educationRequirements) {
@@ -73,39 +77,7 @@ public class EditJobGUI extends JFrame {
 		btnSave = new JButton("Save");
 		btnSave.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				// Check if all text fields are non-empty
-		        if (isFieldsNotEmpty()) {
-		            // Get values from text fields
-		            String jobTitle2 = txtTitle.getText();
-		            String jobDescription = txtDescription.getText();
-		            String location = txtLocation.getText();
-		            String educationRequirements = txtEducation.getText();
-
-		            // Insert values into the job table
-		            try {
-		                Connection connection = DatabaseConnect.connect();
-		                String updateJobQuery = "UPDATE job SET job_title = ?, job_description = ?, location = ?, education_requirements = ? WHERE username = ? AND job_title = ?";
-		                try (PreparedStatement preparedStatement = connection.prepareStatement(updateJobQuery)) {
-		                    preparedStatement.setString(1, jobTitle2);
-		                    preparedStatement.setString(2, jobDescription);
-		                    preparedStatement.setString(3, location);
-		                    preparedStatement.setString(4, educationRequirements);
-		                    preparedStatement.setString(5, username);
-		                    preparedStatement.setString(6, jobTitle);
-
-		                    int rowsAffected = preparedStatement.executeUpdate();
-
-		                    if (rowsAffected > 0) {
-		                        JOptionPane.showMessageDialog(null, "Job updated successfully!");
-		                    } else {
-		                        JOptionPane.showMessageDialog(null, "Job not found or no changes made.", "Error", JOptionPane.ERROR_MESSAGE);
-		                    }
-		                }
-		            } catch (SQLException ex) {
-		                ex.printStackTrace();
-		                JOptionPane.showMessageDialog(null, "Error updating job information.", "Error", JOptionPane.ERROR_MESSAGE);
-		            }
-		        }
+				saveJobInfo(username, jobTitle);
 			}
 		});
 		btnSave.setFont(new Font("Lucida Grande", Font.PLAIN, 14));
@@ -123,11 +95,26 @@ public class EditJobGUI extends JFrame {
 		contentPane.add(btnCancel);
 	}
 	
-	private boolean isFieldsNotEmpty() {
+	public boolean isFieldsNotEmpty() {
 	    return !txtTitle.getText().isEmpty() &&
 	           !txtDescription.getText().isEmpty() &&
 	           !txtLocation.getText().isEmpty() &&
 	           !txtEducation.getText().isEmpty();
+	}
+	
+	public void saveJobInfo(String username, String jobTitle) {
+		// Check if all text fields are non-empty
+        if (isFieldsNotEmpty()) {
+            // Get values from text fields
+            new_jobTitle = txtTitle.getText();
+            new_jobDescription = txtDescription.getText();
+            new_location = txtLocation.getText();
+            new_educationRequirements = txtEducation.getText();
+            // Insert values into the job table
+            conn = new DatabaseConnect();
+            conn.updateJob(new_jobTitle, new_jobDescription, new_location, new_educationRequirements, username, jobTitle);
+            
+        }
 	}
 
 }
