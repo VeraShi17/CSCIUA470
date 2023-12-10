@@ -12,7 +12,7 @@ Using Java Database Connectivity (JDBC). Please first download the MySQL Connect
 
 ## Functionalities
 1. User Authentication:
-  1. Job seekers and recruiters can sign up and log in securely to access their respective accounts.
+  - 1.1 Job seekers and recruiters can sign up and log in securely to access their respective accounts.
 2. Job Seeker Functionalities:
   1. Search for jobs based on keywords.
   2. Update personal information, skills, and work experience in the user’s profile.
