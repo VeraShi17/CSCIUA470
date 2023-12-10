@@ -14,12 +14,16 @@ public class SearchJobsGUI extends JFrame {
     private JButton btnViewDetails;
     private JButton btnApply;
     private JButton btnCancel;
-
     private String selectedJobTitle;
     private String selectedRecruiterUsername;
-    
     private JPanel searchPanel;
     private JPanel buttonPanel;
+    private DatabaseConnect conn;
+    private ResultSet resultSet;
+    private String[] columnNames = {"Job Title", "Recruiter Username"};
+    private DefaultTableModel model;
+    private int selectedRow;
+    private String searchTerm;
 
     public SearchJobsGUI(String jobSeekerUsername) {
         setTitle("Search Jobs");
@@ -79,8 +83,8 @@ public class SearchJobsGUI extends JFrame {
         getContentPane().add(buttonPanel, BorderLayout.SOUTH);
     }
 
-    private void searchJobs() {
-        String searchTerm = txtSearch.getText().trim();
+    public void searchJobs() {
+        searchTerm = txtSearch.getText().trim();
         if (!searchTerm.isEmpty()) {
             populateJobsTable(searchTerm);
         } else {
@@ -88,38 +92,35 @@ public class SearchJobsGUI extends JFrame {
         }
     }
 
-    private void populateJobsTable(String searchTerm) {
-        // Define the column names
-        String[] columnNames = {"Job Title", "Recruiter Username"};
-
+    public void populateJobsTable(String searchTerm) {
         // Create a DefaultTableModel with no data
-        DefaultTableModel model = new DefaultTableModel(null, columnNames);
+        model = new DefaultTableModel(null, columnNames);
 
-        try (Connection connection = DatabaseConnect.connect()) {
-            String selectJobsQuery = "SELECT job_title, username FROM job WHERE status = 'open' AND job_title LIKE ?";
-            try (PreparedStatement preparedStatement = connection.prepareStatement(selectJobsQuery)) {
-                preparedStatement.setString(1, "%" + searchTerm + "%");
-                ResultSet resultSet = preparedStatement.executeQuery();
+        // Iterate through the ResultSet and add rows to the model
+        conn = new DatabaseConnect();
+    	resultSet = conn.retrieveSearchedJobs(searchTerm);
+        try {
+			while (resultSet.next()) {
+			    Object[] rowData = {resultSet.getString("job_title"), resultSet.getString("username")};
+			    model.addRow(rowData);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 
-                // Iterate through the ResultSet and add rows to the model
-                while (resultSet.next()) {
-                    Object[] rowData = {resultSet.getString("job_title"), resultSet.getString("username")};
-                    model.addRow(rowData);
-                }
+        // Set the model to the JTable
+        jobsTable.setModel(model);
 
-                // Set the model to the JTable
-                jobsTable.setModel(model);
-
-                // Close the ResultSet
-                resultSet.close();
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        // Close the ResultSet
+        try {
+			resultSet.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
     }
 
-    private void viewJobDetails(String jobSeekerUsername) {
-        int selectedRow = jobsTable.getSelectedRow();
+    public void viewJobDetails(String jobSeekerUsername) {
+        selectedRow = jobsTable.getSelectedRow();
         if (selectedRow != -1) {
             selectedJobTitle = (String) jobsTable.getValueAt(selectedRow, 0);
             selectedRecruiterUsername = (String) jobsTable.getValueAt(selectedRow, 1);
@@ -130,32 +131,16 @@ public class SearchJobsGUI extends JFrame {
         }
     }
 
-    private void applyForJob(String jobSeekerUsername) {
-        int selectedRow = jobsTable.getSelectedRow();
+    public void applyForJob(String jobSeekerUsername) {
+        selectedRow = jobsTable.getSelectedRow();
         if (selectedRow != -1) {
             selectedJobTitle = (String) jobsTable.getValueAt(selectedRow, 0);
             selectedRecruiterUsername = (String) jobsTable.getValueAt(selectedRow, 1);
-            applyJob(jobSeekerUsername, selectedRecruiterUsername, selectedJobTitle);
+            conn.applyJob(jobSeekerUsername, selectedRecruiterUsername, selectedJobTitle);
         } else {
             JOptionPane.showMessageDialog(null, "Please select a job to apply.", "Warning", JOptionPane.WARNING_MESSAGE);
         }
     }
     
-    public void applyJob(String jobseeker_username, String recruiter_username, String jobTitle) {
-		try (Connection connection = DatabaseConnect.connect()) {
-	        String insertApplicationQuery = "INSERT INTO applicant (recruiter_username, job_title, jobseeker_username, application_status) VALUES (?, ?, ?, 'Pending')";
-	        try (PreparedStatement preparedStatement = connection.prepareStatement(insertApplicationQuery)) {
-	            preparedStatement.setString(1, recruiter_username);
-	            preparedStatement.setString(2, jobTitle);
-	            preparedStatement.setString(3, jobseeker_username);
-
-	            preparedStatement.executeUpdate();
-	        }
-	        JOptionPane.showMessageDialog(null, "Application submitted successfully!");
-	    } catch (SQLException ex) {
-	        ex.printStackTrace();
-	        JOptionPane.showMessageDialog(null, "Error submitting application.", "Error", JOptionPane.ERROR_MESSAGE);
-	    }
-	}
 
 }
