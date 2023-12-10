@@ -12,6 +12,12 @@ public class ReviewApplicationsGUI extends JFrame {
     private JButton btnViewApplicants;
     private JButton btnCancel;
     private JPanel buttonPanel;
+    private DatabaseConnect conn;
+    private ResultSet resultSet;
+    private String[] columnNames = {"Job Title", "Job Status"};
+    private DefaultTableModel model;
+    private int selectedRow;
+    private String jobTitle;
 
     public ReviewApplicationsGUI(String recruiterUsername) {
         setTitle("Review Applications");
@@ -26,12 +32,7 @@ public class ReviewApplicationsGUI extends JFrame {
         // Add action listeners
         btnViewApplicants.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                // Handle view applicants button click
-                int selectedRow = jobsTable.getSelectedRow();
-                if (selectedRow != -1) {
-                    String jobTitle = (String) jobsTable.getValueAt(selectedRow, 0);
-                    viewApplicants(recruiterUsername, jobTitle);
-                }
+                viewselectedapplicant(recruiterUsername);
             }
         });
 
@@ -57,38 +58,38 @@ public class ReviewApplicationsGUI extends JFrame {
     }
 
     public void populateJobsTable(JTable jobsTable, String recruiterUsername) {
-        // Define the column names
-        String[] columnNames = {"Job Title", "Job Status"};
-
-        // Create a DefaultTableModel with no data
-        DefaultTableModel model = new DefaultTableModel(null, columnNames);
-
-        try (Connection connection = DatabaseConnect.connect()) {
-            String selectJobsQuery = "SELECT job_title, status FROM job WHERE username = ?";
-            try (PreparedStatement preparedStatement = connection.prepareStatement(selectJobsQuery)) {
-                preparedStatement.setString(1, recruiterUsername);
-                ResultSet resultSet = preparedStatement.executeQuery();
-
-                // Iterate through the ResultSet and add rows to the model
-                while (resultSet.next()) {
-                    Object[] rowData = {resultSet.getString("job_title"), resultSet.getString("status")};
-                    model.addRow(rowData);
-                }
-
-                // Set the model to the JTable
-                jobsTable.setModel(model);
-
-                // Close the ResultSet
-                resultSet.close();
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+    	// Create a DefaultTableModel with no data
+        model = new DefaultTableModel(null, columnNames);
+        conn = new DatabaseConnect();
+        resultSet = conn.retrieveJobInfo(recruiterUsername);
+        // Iterate through the ResultSet and add rows to the model
+        try {
+			while (resultSet.next()) {
+			    Object[] rowData = {resultSet.getString("job_title"), resultSet.getString("status")};
+			    model.addRow(rowData);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+        
+        // Set the model to the JTable
+        jobsTable.setModel(model);
+        // Close the ResultSet
+        try {
+			resultSet.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
     }
 
-    private void viewApplicants(String recruiterUsername, String jobTitle) {
-        ViewApplicantsGUI viewapplicantsgui = new ViewApplicantsGUI(recruiterUsername, jobTitle);
-        viewapplicantsgui.show();
+    public void viewselectedapplicant(String recruiterUsername) {
+    	// Handle view applicants button click
+        selectedRow = jobsTable.getSelectedRow();
+        if (selectedRow != -1) {
+            jobTitle = (String) jobsTable.getValueAt(selectedRow, 0);
+            ViewApplicantsGUI viewapplicantsgui = new ViewApplicantsGUI(recruiterUsername, jobTitle);
+            viewapplicantsgui.show();
+        }
     }
 
 }
