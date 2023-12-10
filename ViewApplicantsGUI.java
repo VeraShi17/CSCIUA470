@@ -14,6 +14,12 @@ public class ViewApplicantsGUI extends JFrame {
     private JButton btnReject;
     private JButton btnCancel;
     private JPanel buttonPanel;
+    private DatabaseConnect conn;
+    private ResultSet resultSet;
+    private String[] columnNames = {"JobSeeker Username", "Application Status"};
+    private DefaultTableModel model;
+    private int selectedRow;
+    private String jobSeekerUsername;
 
     public ViewApplicantsGUI(String recruiterUsername, String jobTitle) {
         setTitle(jobTitle + " - View Applicants");
@@ -30,34 +36,19 @@ public class ViewApplicantsGUI extends JFrame {
         // Add action listeners
         btnViewProfile.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                // Handle view profile button click
-                int selectedRow = applicantsTable.getSelectedRow();
-                if (selectedRow != -1) {
-                    String jobSeekerUsername = (String) applicantsTable.getValueAt(selectedRow, 0);
-                    viewProfile(jobSeekerUsername);
-                }
+                viewProfile();
             }
         });
 
         btnAccept.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                // Handle accept button click
-                int selectedRow = applicantsTable.getSelectedRow();
-                if (selectedRow != -1) {
-                    String jobSeekerUsername = (String) applicantsTable.getValueAt(selectedRow, 0);
-                    acceptApplication(recruiterUsername, jobTitle, jobSeekerUsername);
-                }
+                acceptSelectedApplicant(recruiterUsername, jobTitle);
             }
         });
 
         btnReject.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                // Handle reject button click
-                int selectedRow = applicantsTable.getSelectedRow();
-                if (selectedRow != -1) {
-                    String jobSeekerUsername = (String) applicantsTable.getValueAt(selectedRow, 0);
-                    rejectApplication(recruiterUsername, jobTitle, jobSeekerUsername);
-                }
+                rejectSelectedApplicant(recruiterUsername, jobTitle);
             }
         });
 
@@ -86,90 +77,58 @@ public class ViewApplicantsGUI extends JFrame {
     }
 
     public void populateApplicantsTable(JTable applicantsTable, String recruiterUsername, String jobTitle) {
-        // Define the column names
-        String[] columnNames = {"JobSeeker Username", "Application Status"};
+        model = new DefaultTableModel(null, columnNames);
 
-        // Create a DefaultTableModel with no data
-        DefaultTableModel model = new DefaultTableModel(null, columnNames);
+     // Iterate through the ResultSet and add rows to the model
+        conn = new DatabaseConnect();
+        resultSet = conn.retrieveApplicantInfo(recruiterUsername, jobTitle);
+        try {
+			while (resultSet.next()) {
+			    Object[] rowData = {resultSet.getString("jobseeker_username"), resultSet.getString("application_status")};
+			    model.addRow(rowData);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 
-        try (Connection connection = DatabaseConnect.connect()) {
-            String selectApplicantsQuery = "SELECT jobseeker_username, application_status FROM applicant WHERE recruiter_username = ? AND job_title = ?";
-            try (PreparedStatement preparedStatement = connection.prepareStatement(selectApplicantsQuery)) {
-                preparedStatement.setString(1, recruiterUsername);
-                preparedStatement.setString(2, jobTitle);
-                ResultSet resultSet = preparedStatement.executeQuery();
+        // Set the model to the JTable
+        applicantsTable.setModel(model);
 
-                // Iterate through the ResultSet and add rows to the model
-                while (resultSet.next()) {
-                    Object[] rowData = {resultSet.getString("jobseeker_username"), resultSet.getString("application_status")};
-                    model.addRow(rowData);
-                }
+        // Close the ResultSet
+        try {
+			resultSet.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+    }
 
-                // Set the model to the JTable
-                applicantsTable.setModel(model);
-
-                // Close the ResultSet
-                resultSet.close();
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
+    public void viewProfile() {
+    	// Handle view profile button click
+        selectedRow = applicantsTable.getSelectedRow();
+        if (selectedRow != -1) {
+            jobSeekerUsername = (String) applicantsTable.getValueAt(selectedRow, 0);
+            ViewJSProfileGUI viewjsprofilegui = new ViewJSProfileGUI(jobSeekerUsername);
+            viewjsprofilegui.show();
         }
     }
 
-    private void viewProfile(String jobSeekerUsername) {
-        ViewJSProfileGUI viewjsprofilegui = new ViewJSProfileGUI(jobSeekerUsername);
-        viewjsprofilegui.show();
+    public void acceptSelectedApplicant(String recruiterUsername, String jobTitle) {
+    	// Handle accept button click
+        selectedRow = applicantsTable.getSelectedRow();
+        if (selectedRow != -1) {
+            jobSeekerUsername = (String) applicantsTable.getValueAt(selectedRow, 0);
+            conn.acceptApplication(recruiterUsername, jobTitle, jobSeekerUsername);
+        }
     }
-
-    private void acceptApplication(String recruiterUsername, String jobTitle, String jobSeekerUsername) {
-    	try (Connection connection = DatabaseConnect.connect()) {
-            // Update the application status to "accept" in the applicant table
-            String updateApplicationQuery = "UPDATE applicant SET application_status = 'accept' " +
-                    "WHERE recruiter_username = ? AND job_title = ? AND jobseeker_username = ?";
-            
-            try (PreparedStatement preparedStatement = connection.prepareStatement(updateApplicationQuery)) {
-                preparedStatement.setString(1, recruiterUsername);
-                preparedStatement.setString(2, jobTitle);
-                preparedStatement.setString(3, jobSeekerUsername);
-
-                int rowsAffected = preparedStatement.executeUpdate();
-
-                if (rowsAffected > 0) {
-                    // Application status updated successfully
-                    System.out.println("Application accepted successfully!");
-                } else {
-                    // No rows were affected, application not found or not updated
-                    System.out.println("Application not found or not updated.");
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
+    
+    public void rejectSelectedApplicant(String recruiterUsername, String jobTitle) {
+    	// Handle reject button click
+        selectedRow = applicantsTable.getSelectedRow();
+        if (selectedRow != -1) {
+            jobSeekerUsername = (String) applicantsTable.getValueAt(selectedRow, 0);
+            conn.rejectApplication(recruiterUsername, jobTitle, jobSeekerUsername);
         }
     }
 
-    private void rejectApplication(String recruiterUsername, String jobTitle, String jobSeekerUsername) {
-    	try (Connection connection = DatabaseConnect.connect()) {
-            // Update the application status to "reject" in the applicant table
-            String updateApplicationQuery = "UPDATE applicant SET application_status = 'reject' " +
-                    "WHERE recruiter_username = ? AND job_title = ? AND jobseeker_username = ?";
-            
-            try (PreparedStatement preparedStatement = connection.prepareStatement(updateApplicationQuery)) {
-                preparedStatement.setString(1, recruiterUsername);
-                preparedStatement.setString(2, jobTitle);
-                preparedStatement.setString(3, jobSeekerUsername);
-
-                int rowsAffected = preparedStatement.executeUpdate();
-
-                if (rowsAffected > 0) {
-                    // Application status updated successfully
-                    System.out.println("Application rejected successfully!");
-                } else {
-                    // No rows were affected, application not found or not updated
-                    System.out.println("Application not found or not updated.");
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
+    
 }
