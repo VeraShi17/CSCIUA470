@@ -13,6 +13,13 @@ public class ViewJobsGUI extends JFrame {
     private JButton btnApply;
     private JButton btnCancel;
     private JPanel buttonPanel;
+    private DatabaseConnect conn;
+    private ResultSet resultSet;
+    private DefaultTableModel model;
+    private String[] columnNames = {"Job Title", "Recruiter Username"};
+    private int selectedRow;
+    private String jobTitle;
+    private String recruiter_username;
 
 	
 	public ViewJobsGUI(String username) {
@@ -27,23 +34,13 @@ public class ViewJobsGUI extends JFrame {
         
         btnDetail.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                int selectedRow = jobsTable.getSelectedRow();
-                if (selectedRow != -1) {
-                    String jobTitle = (String) jobsTable.getValueAt(selectedRow, 0);
-                    String recruiter_username = (String) jobsTable.getValueAt(selectedRow, 1);
-                    viewDetailJob(recruiter_username, jobTitle);
-                }
+                viewDetailJob();
             }
         });
         
         btnApply.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                int selectedRow = jobsTable.getSelectedRow();
-                if (selectedRow != -1) {
-                    String jobTitle = (String) jobsTable.getValueAt(selectedRow, 0);
-                    String recruiter_username = (String) jobsTable.getValueAt(selectedRow, 1);
-                    applyJob(username, recruiter_username, jobTitle);
-                }
+                applySelectedJob(username);
             }
         });
         
@@ -67,49 +64,47 @@ public class ViewJobsGUI extends JFrame {
         populateAvailableJobsTable(jobsTable);
 	}
 	
-	private void populateAvailableJobsTable(JTable jobsTable) {
-		String[] columnNames = {"Job Title", "Recruiter Username"};
+	public void populateAvailableJobsTable(JTable jobsTable) {
+        model = new DefaultTableModel(null, columnNames);
+        conn = new DatabaseConnect();
+    	resultSet = conn.retrieveJobs();
+    	
+        try {
+			while (resultSet.next()) {
+			    Object[] rowData = {resultSet.getString("job_title"), resultSet.getString("username")};
+			    model.addRow(rowData);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 
-        DefaultTableModel model = new DefaultTableModel(null, columnNames);
-
-        try (Connection connection = DatabaseConnect.connect()) {
-            String selectAvailableJobsQuery = "SELECT job_title, username FROM job WHERE status = 'open'";
-            try (PreparedStatement preparedStatement = connection.prepareStatement(selectAvailableJobsQuery)) {
-                ResultSet resultSet = preparedStatement.executeQuery();
-
-                while (resultSet.next()) {
-                    Object[] rowData = {resultSet.getString("job_title"), resultSet.getString("username")};
-                    model.addRow(rowData);
-                }
-
-                jobsTable.setModel(model);
-                
-                resultSet.close();
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        jobsTable.setModel(model);
+        
+        try {
+			resultSet.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
     }
 	
-	public void viewDetailJob(String recruiter_username, String jobTitle) {
-		ViewJobDetailsGUI viewJobDetailsGUI = new ViewJobDetailsGUI(recruiter_username, jobTitle);
-		viewJobDetailsGUI.show();
+	public void viewDetailJob() {
+		selectedRow = jobsTable.getSelectedRow();
+        if (selectedRow != -1) {
+            jobTitle = (String) jobsTable.getValueAt(selectedRow, 0);
+            recruiter_username = (String) jobsTable.getValueAt(selectedRow, 1);
+            ViewJobDetailsGUI viewJobDetailsGUI = new ViewJobDetailsGUI(recruiter_username, jobTitle);
+    		viewJobDetailsGUI.show();
+        }
 	}
 	
-	public void applyJob(String jobseeker_username, String recruiter_username, String jobTitle) {
-		try (Connection connection = DatabaseConnect.connect()) {
-	        String insertApplicationQuery = "INSERT INTO applicant (recruiter_username, job_title, jobseeker_username, application_status) VALUES (?, ?, ?, 'Pending')";
-	        try (PreparedStatement preparedStatement = connection.prepareStatement(insertApplicationQuery)) {
-	            preparedStatement.setString(1, recruiter_username);
-	            preparedStatement.setString(2, jobTitle);
-	            preparedStatement.setString(3, jobseeker_username);
-
-	            preparedStatement.executeUpdate();
-	        }
-	        JOptionPane.showMessageDialog(null, "Application submitted successfully!");
-	    } catch (SQLException ex) {
-	        ex.printStackTrace();
-	        JOptionPane.showMessageDialog(null, "Error submitting application.", "Error", JOptionPane.ERROR_MESSAGE);
-	    }
+	public void applySelectedJob(String username) {
+		selectedRow = jobsTable.getSelectedRow();
+        if (selectedRow != -1) {
+            jobTitle = (String) jobsTable.getValueAt(selectedRow, 0);
+            recruiter_username = (String) jobsTable.getValueAt(selectedRow, 1);
+            conn.applyJob(username, recruiter_username, jobTitle);
+        } else {
+            JOptionPane.showMessageDialog(null, "Please select a job to apply.", "Warning", JOptionPane.WARNING_MESSAGE);
+        }
 	}
 }
