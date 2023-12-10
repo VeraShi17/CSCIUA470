@@ -2,7 +2,6 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ActionListener;
-import java.sql.*;
 import java.awt.event.ActionEvent;
 
 public class RecruiterInfoGUI extends JFrame {
@@ -21,6 +20,12 @@ public class RecruiterInfoGUI extends JFrame {
 	private JLabel lblCompanyName;
 	private JLabel lblCompanyDescription;
 	private JButton btnNext;
+	private DatabaseConnect conn;
+	private String name;
+	private String phone;
+	private String email;
+	private String companyName;
+	private String companyDescription;
 
 	
 	public RecruiterInfoGUI(String username) {
@@ -89,12 +94,7 @@ public class RecruiterInfoGUI extends JFrame {
 		btnNext = new JButton("Next");
 		btnNext.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if (areTextFieldsEmpty()) {
-                    JOptionPane.showMessageDialog(null, "Please fill in all fields.", "Warning", JOptionPane.WARNING_MESSAGE);
-                } else {
-                    saveRecruiterInformation(username);
-                }
-				dispose();
+				provideRecruiterInfo(username);
 			}
 		});
 		btnNext.setFont(new Font("Lucida Grande", Font.PLAIN, 14));
@@ -106,35 +106,26 @@ public class RecruiterInfoGUI extends JFrame {
 		contentPane.add(txtCompanyDescription);
 	}
 	
-	private boolean areTextFieldsEmpty() {
+	public boolean areTextFieldsEmpty() {
         return txtName.getText().trim().isEmpty() ||
                txtPhone.getText().trim().isEmpty() ||
                txtEmail.getText().trim().isEmpty() ||
                txtCompanyName.getText().trim().isEmpty() ||
                txtCompanyDescription.getText().trim().isEmpty();
-    }
+    }	
 	
-	private void saveRecruiterInformation(String username) {
-        String name = txtName.getText().trim();
-        String phone = txtPhone.getText().trim();
-        String email = txtEmail.getText().trim();
-        String companyName = txtCompanyName.getText().trim();
-        String companyDescription = txtCompanyDescription.getText().trim();
-        try (Connection connection = DatabaseConnect.connect()) {
-            String updateRecruiterInfoQuery = "UPDATE recruiter SET name=?, phone=?, email=?, company_name=?, company_description=? WHERE username=?";
-            try (PreparedStatement preparedStatement = connection.prepareStatement(updateRecruiterInfoQuery)) {
-                preparedStatement.setString(1, name);
-                preparedStatement.setString(2, phone);
-                preparedStatement.setString(3, email);
-                preparedStatement.setString(4, companyName);
-                preparedStatement.setString(5, companyDescription);
-                preparedStatement.setString(6, username);
-                preparedStatement.executeUpdate();
-            }
-            JOptionPane.showMessageDialog(null, "Recruiter information saved successfully!");
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-            JOptionPane.showMessageDialog(null, "Error saving recruiter information.", "Error", JOptionPane.ERROR_MESSAGE);
+	public void provideRecruiterInfo(String username) {
+		if (areTextFieldsEmpty()) {
+            JOptionPane.showMessageDialog(null, "Please fill in all fields.", "Warning", JOptionPane.WARNING_MESSAGE);
+        } else {
+        	conn = new DatabaseConnect();
+            name = txtName.getText().trim();
+            phone = txtPhone.getText().trim();
+            email = txtEmail.getText().trim();
+            companyName = txtCompanyName.getText().trim();
+            companyDescription = txtCompanyDescription.getText().trim();
+            conn.saveRecruiterInformation(username, name, phone, email, companyName, companyDescription);
         }
-    }
+		dispose();
+	}
 }
