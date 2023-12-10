@@ -14,6 +14,13 @@ public class RecruiterMainGUI extends JFrame {
 	private JButton btnManage;
 	private JButton btnReview;
 	private JButton btnUpdate;
+	private DatabaseConnect conn;
+	private ResultSet resultSet;
+	private String name;
+	private String phone;
+	private String email;
+	private String companyName;
+	private String companyDescription;
 
 	
 	public RecruiterMainGUI(String username) {
@@ -63,7 +70,7 @@ public class RecruiterMainGUI extends JFrame {
 		btnUpdate = new JButton("Update Profile");
 		btnUpdate.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				recruiterinfoshow(username);
+				editrecruiterinfoshow(username);
 			}
 		});
 		btnUpdate.setFont(new Font("Lucida Grande", Font.PLAIN, 15));
@@ -81,30 +88,26 @@ public class RecruiterMainGUI extends JFrame {
 		postedjobsgui.show();
 	}
 	
-	public void recruiterinfoshow(String username) {
-		try (Connection connection = DatabaseConnect.connect()) {
-	        String selectRecruiterQuery = "SELECT * FROM recruiter WHERE username = ?";
-	        try (PreparedStatement preparedStatement = connection.prepareStatement(selectRecruiterQuery)) {
-	            preparedStatement.setString(1, username);
-	            ResultSet resultSet = preparedStatement.executeQuery();
-
-	            if (resultSet.next()) {
-	                String name = resultSet.getString("name");
-	                String phone = resultSet.getString("phone");
-	                String email = resultSet.getString("email");
-	                String companyName = resultSet.getString("company_name");
-	                String companyDescription = resultSet.getString("company_description");
-	                EditRecruiterInfoGUI editrecruiterinfogui = new EditRecruiterInfoGUI(username, name, phone, email, companyName, companyDescription);
-	        		editrecruiterinfogui.show();
-	            } else {
-	                JOptionPane.showMessageDialog(null, "Recruiter info not found.", "Error", JOptionPane.ERROR_MESSAGE);
-	            }
-	        }
-	    } catch (SQLException ex) {
-	        ex.printStackTrace();
-	        JOptionPane.showMessageDialog(null, "Error retrieving recruiter information.", "Error", JOptionPane.ERROR_MESSAGE);
-	    }
-		
+	public void editrecruiterinfoshow(String username) {
+		conn = new DatabaseConnect();
+		resultSet = conn.retrieveRecruiterInfo(username);
+		try {
+			if (resultSet.next()) {
+			    name = resultSet.getString("name");
+			    phone = resultSet.getString("phone");
+			    email = resultSet.getString("email");
+			    companyName = resultSet.getString("company_name");
+			    companyDescription = resultSet.getString("company_description");
+			    EditRecruiterInfoGUI editrecruiterinfogui = new EditRecruiterInfoGUI(username, name, phone, email, companyName, companyDescription);
+				editrecruiterinfogui.show();
+			} else {
+			    JOptionPane.showMessageDialog(null, "Recruiter info not found.", "Error", JOptionPane.ERROR_MESSAGE);
+			}
+		} catch (HeadlessException e) {
+			e.printStackTrace();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public void reviewapplications_show(String username) {
