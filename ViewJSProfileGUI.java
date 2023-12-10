@@ -15,6 +15,14 @@ public class ViewJSProfileGUI extends JFrame {
     private JLabel lblEducation;
     private JLabel lblWork;
     private JButton btnCancel;
+    private DatabaseConnect conn;
+    private ResultSet resultSet;
+    private String name;
+    private String phone;
+    private String email;
+    private String skills;
+    private String education;
+    private String work;
 
     public ViewJSProfileGUI(String jsUsername) {
         setTitle("Job Seeker Profile");
@@ -51,38 +59,37 @@ public class ViewJSProfileGUI extends JFrame {
         populateJsProfile(jsUsername);
     }
 
-    private void populateJsProfile(String jsUsername) {
-        try (Connection connection = DatabaseConnect.connect()) {
-            String selectJsProfileQuery = "SELECT * FROM jobseeker WHERE username = ?";
-            try (PreparedStatement preparedStatement = connection.prepareStatement(selectJsProfileQuery)) {
-                preparedStatement.setString(1, jsUsername);
-                ResultSet resultSet = preparedStatement.executeQuery();
+    public void populateJsProfile(String jsUsername) {
+    	conn = new DatabaseConnect();
+    	resultSet = conn.retrieveJSProfile(jsUsername);
+    	try {
+			if (resultSet.next()) {
+			    
+			    name = resultSet.getString("name");
+			    phone = resultSet.getString("phone");
+			    email = resultSet.getString("email");
+			    skills = resultSet.getString("skills");
+			    education = resultSet.getString("education");
+			    work = resultSet.getString("work_experience");
+			   
+			    lblName.setText("Name: " + name);
+			    lblPhone.setText("Phone: " + phone);
+			    lblEmail.setText("Email: " + email);
+			    lblSkills.setText("Skills: " + skills);
+			    lblEducation.setText("Education Experience: " + education);
+			    lblWork.setText("Work Experience: " + work);
 
-                if (resultSet.next()) {
-            
-                    String name = resultSet.getString("name");
-                    String phone = resultSet.getString("phone");
-                    String email = resultSet.getString("email");
-                    String skills = resultSet.getString("skills");
-                    String education = resultSet.getString("education");
-                    String work = resultSet.getString("work_experience");
-                   
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 
-                    lblName.setText("Name: " + name);
-                    lblPhone.setText("Phone: " + phone);
-                    lblEmail.setText("Email: " + email);
-                    lblSkills.setText("Skills: " + skills);
-                    lblEducation.setText("Education Experience: " + education);
-                    lblWork.setText("Work Experience: " + work);
-
-                }
-
-                // Close the ResultSet
-                resultSet.close();
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        // Close the ResultSet
+        try {
+			resultSet.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
     }
 
 }
