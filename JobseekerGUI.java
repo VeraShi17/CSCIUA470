@@ -2,7 +2,6 @@ import java.awt.*;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.event.ActionListener;
-import java.sql.*;
 import java.awt.event.ActionEvent;
 
 public class JobseekerGUI extends JFrame {
@@ -16,6 +15,10 @@ public class JobseekerGUI extends JFrame {
 	private JLabel lblPassword;
 	private JButton btnLogin;
 	private JButton btnSignup;
+	private String username;
+	private String password;
+	private DatabaseConnect conn;
+	private boolean isValidLogin;
 	
 	public JobseekerGUI() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -56,20 +59,9 @@ public class JobseekerGUI extends JFrame {
 		btnLogin = new JButton("Log in");
 		btnLogin.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				String enteredUsername = txtUsername.getText().trim();
-		        String enteredPassword = txtPassword.getText();
-		        if (enteredUsername.isEmpty() || enteredPassword.isEmpty()) {
-		            JOptionPane.showMessageDialog(null, "Please enter both username and password.", "Warning", JOptionPane.WARNING_MESSAGE);
-		            return;
-		        }
-		        boolean isValidLogin = checkJobSeekerLogin(enteredUsername, enteredPassword);
-		        
-		        if (isValidLogin) {
-		            JOptionPane.showMessageDialog(null, "Login successful!");
-		            openJobSeekerMainGUI(enteredUsername);
-		        } else {
-		            JOptionPane.showMessageDialog(null, "Invalid username or password.", "Login Failed", JOptionPane.ERROR_MESSAGE);
-		        }
+				username = txtUsername.getText().trim();
+		        password = txtPassword.getText();
+		        jobSeekerLogin();
 			}
 		});
 		btnLogin.setFont(new Font("Lucida Grande", Font.PLAIN, 16));
@@ -91,25 +83,29 @@ public class JobseekerGUI extends JFrame {
 		JobSeekerSignupGUI jobseekersignupgui = new JobSeekerSignupGUI();
 		jobseekersignupgui.show();
 	}
-	
-	public boolean checkJobSeekerLogin(String username, String password) {
-	    try (Connection connection = DatabaseConnect.connect()) {
-	        String query = "SELECT * FROM jobseeker WHERE username=? AND password=?";
-	        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-	            preparedStatement.setString(1, username);
-	            preparedStatement.setString(2, password);
-	            ResultSet resultSet = preparedStatement.executeQuery();
-	            return resultSet.next();
-	        }
-	    } catch (SQLException ex) {
-	        ex.printStackTrace();
-	        return false; 
-	    }
-	}
 
 	public void openJobSeekerMainGUI(String username) {
 	     JobSeekerMainGUI jobseekerMainGUI = new JobSeekerMainGUI(username);
 	     jobseekerMainGUI.show();
+	}
+	public boolean areTextFieldsEmpty(){
+		return username.isEmpty() || password.isEmpty();
+	}
+	
+	public void jobSeekerLogin() {
+		if (areTextFieldsEmpty()) {
+            JOptionPane.showMessageDialog(null, "Please enter both username and password.", "Warning", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        conn = new DatabaseConnect();
+        isValidLogin = conn.checkJobSeekerLogin(username, password);
+        
+        if (isValidLogin) {
+            JOptionPane.showMessageDialog(null, "Login successful!");
+            openJobSeekerMainGUI(username);
+        } else {
+            JOptionPane.showMessageDialog(null, "Invalid username or password.", "Login Failed", JOptionPane.ERROR_MESSAGE);
+        }
 	}
 
 }
