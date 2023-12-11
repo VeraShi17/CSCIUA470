@@ -1,5 +1,5 @@
 # CSCIUA470
-OOP Final Project - CareerLinker 
+OOP Final Project - CareerLinker   
 
 CareerLinker is envisioned as a comprehensive Job Recruitment System aimed at
 simplifying the job search and recruitment process. In this scenario, job seekers and recruiters
