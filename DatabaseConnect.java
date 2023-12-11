@@ -2,7 +2,8 @@ import java.sql.*;
 import javax.swing.JOptionPane;
 
 public class DatabaseConnect {
-    private String url = "jdbc:mysql://localhost:3306/CareerLinker";
+
+	private String url = "jdbc:mysql://localhost:3306/CareerLinker";
     private String user = "project_admin";
     private String password = "oopfinalproject";
     private Connection connection;
