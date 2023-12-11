@@ -8,6 +8,10 @@ parties.
 
 To run the file, just run `Main.java`
 
+## Demo
+
+https://github.com/VeraShi17/CSCIUA470/assets/104609670/e5faed8c-4ffa-405a-bde6-0aa1fac4dffc
+
 ## Requirements
 Using Java Database Connectivity (JDBC). 
 Please first download the MySQL Connector/J JAR file and import MySQL Connector Into Eclipse IDE. 
